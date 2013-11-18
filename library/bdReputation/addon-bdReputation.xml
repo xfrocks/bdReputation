@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="bdReputation" title="[bd] Reputation System" version_string="1.3" version_id="5" url="" install_callback_class="bdReputation_Installer" install_callback_method="install" uninstall_callback_class="bdReputation_Installer" uninstall_callback_method="uninstall">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="bdReputation_Listener" callback_method="load_class" active="1" description=""/>
+    <listener event_id="load_class_datawriter" execute_order="10" callback_class="bdReputation_Listener" callback_method="load_class" active="1" description=""/>
+    <listener event_id="load_class_importer" execute_order="10" callback_class="bdReputation_Listener" callback_method="load_class_importer" active="1" description=""/>
+    <listener event_id="template_create" execute_order="10" callback_class="bdReputation_Listener" callback_method="template_create" active="1" description=""/>
+    <listener event_id="template_hook" execute_order="10" callback_class="bdReputation_Listener" callback_method="template_hook" active="1" description=""/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <optiongroups>
+    <group group_id="bdReputation" display_order="9999" debug_only="0"/>
+    <option option_id="bdReputation_factorMessageCount" edit_format="spinbox" data_type="unsigned_integer" can_backup="1">
+      <default_value>1000</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdReputation" display_order="110"/>
+    </option>
+    <option option_id="bdReputation_factorRegisterDate" edit_format="spinbox" data_type="unsigned_integer" can_backup="1">
+      <default_value>365</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdReputation" display_order="100"/>
+    </option>
+    <option option_id="bdReputation_factorReputation" edit_format="spinbox" data_type="unsigned_integer" can_backup="1">
+      <default_value>100</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdReputation" display_order="190"/>
+    </option>
+    <option option_id="bdReputation_factorTrophiesPoint" edit_format="spinbox" data_type="unsigned_integer" can_backup="1">
+      <default_value>10</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdReputation" display_order="120"/>
+    </option>
+    <option option_id="bdReputation_latestGiven" edit_format="onoff" data_type="unsigned_integer" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdReputation" display_order="2000"/>
+    </option>
+    <option option_id="bdReputation_limitDaily" edit_format="spinbox" data_type="unsigned_integer" can_backup="1">
+      <default_value>10</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdReputation" display_order="500"/>
+    </option>
+    <option option_id="bdReputation_limitUserSpread" edit_format="spinbox" data_type="unsigned_integer" can_backup="1">
+      <default_value>20</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdReputation" display_order="510"/>
+    </option>
+    <option option_id="bdReputation_recordsPerPage" edit_format="spinbox" data_type="unsigned_integer" can_backup="1">
+      <default_value>25</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="bdReputation" display_order="1000"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions>
+      <permission permission_group_id="forum" permission_id="bdReputation_give" permission_type="flag" default_value="unset" interface_group_id="forumPermissions" display_order="11001"/>
+      <permission permission_group_id="forum" permission_id="bdReputation_view" permission_type="flag" default_value="unset" interface_group_id="forumPermissions" display_order="11000"/>
+      <permission permission_group_id="general" permission_id="bdReputation_exempt" permission_type="flag" default_value="unset" interface_group_id="generalPermissions" display_order="11010"/>
+      <permission permission_group_id="general" permission_id="bdReputation_giveNegative" permission_type="flag" default_value="unset" interface_group_id="generalPermissions" display_order="11001"/>
+      <permission permission_group_id="general" permission_id="bdReputation_points" permission_type="integer" default_value_int="0" interface_group_id="generalPermissions" display_order="10999"/>
+      <permission permission_group_id="general" permission_id="bdReputation_specify" permission_type="flag" default_value="unset" interface_group_id="generalPermissions" display_order="11000"/>
+      <permission permission_group_id="general" permission_id="bdReputation_viewGlobal" permission_type="flag" default_value="unset" interface_group_id="generalPermissions" display_order="11002"/>
+    </permissions>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="bdreputation_daily_limit_of_x_reputation_gives_has_been_exceeded" version_id="1" version_string="0.9"><![CDATA[Daily limit of {times} reputation gives has been exceeded.]]></phrase>
+    <phrase title="bdreputation_given" version_id="1" version_string="0.9"><![CDATA[Given]]></phrase>
+    <phrase title="bdreputation_given_reputation_records" version_id="1" version_string="0.9"><![CDATA[Given Reputation Records]]></phrase>
+    <phrase title="bdreputation_latest_given" version_id="4" version_string="1.2"><![CDATA[Latest Given Reputation Points]]></phrase>
+    <phrase title="bdreputation_no_reputation_records" version_id="1" version_string="0.9"><![CDATA[No records found.]]></phrase>
+    <phrase title="bdreputation_point" version_id="4" version_string="1.2"><![CDATA[Point]]></phrase>
+    <phrase title="bdreputation_points" version_id="1" version_string="0.9"><![CDATA[Points]]></phrase>
+    <phrase title="bdreputation_post_reputation_records" version_id="3" version_string="1.1"><![CDATA[Post Reputation Records]]></phrase>
+    <phrase title="bdreputation_reputation" version_id="1" version_string="0.9"><![CDATA[Reputation]]></phrase>
+    <phrase title="bdreputation_reputation_comment" version_id="1" version_string="0.9"><![CDATA[Comment]]></phrase>
+    <phrase title="bdreputation_reputation_give" version_id="1" version_string="0.9"><![CDATA[Give Reputation]]></phrase>
+    <phrase title="bdreputation_reputation_give_x_negative" version_id="1" version_string="0.9"><![CDATA[Deduct {points} points]]></phrase>
+    <phrase title="bdreputation_reputation_give_x_positive" version_id="1" version_string="0.9"><![CDATA[Add {points} points]]></phrase>
+    <phrase title="bdreputation_reputation_view" version_id="1" version_string="0.9"><![CDATA[Reputation]]></phrase>
+    <phrase title="bdreputation_someone_gives_reputation" version_id="3" version_string="1.1"><![CDATA[Someone gives reputation]]></phrase>
+    <phrase title="bdreputation_thanks" version_id="1" version_string="0.9"><![CDATA[Reputation has been given. Thank you!]]></phrase>
+    <phrase title="bdreputation_x_also_wrote" version_id="4" version_string="1.2"><![CDATA[{name} also wrote]]></phrase>
+    <phrase title="bdreputation_x_different_users_must_be_given_reputation" version_id="1" version_string="0.9"><![CDATA[{users} different users must be given reputation before hitting the same person again.]]></phrase>
+    <phrase title="bdreputation_x_gave_y_points_for_your_post_in_the_thread_z" version_id="3" version_string="1.1"><![CDATA[{name} gave {points} reputation points for your post in the thread {title}.]]></phrase>
+    <phrase title="bdreputation_x_gave_y_point_for_your_post_in_the_thread_z" version_id="4" version_string="1.2"><![CDATA[{name} gave a reputation point for your post in the thread {title}.]]></phrase>
+    <phrase title="bdreputation_x_took_away_y_points_for_your_post_in_the_thread_z" version_id="3" version_string="1.1"><![CDATA[{name} took away {points} reputation points for your post in the thread {title}.]]></phrase>
+    <phrase title="bdreputation_x_took_away_y_point_for_your_post_in_the_thread_z" version_id="4" version_string="1.2"><![CDATA[{name} took away a reputation point for your post in the thread {title}.]]></phrase>
+    <phrase title="bdreputation_your_range_of_giving_points_is_x_to_y" version_id="1" version_string="0.9"><![CDATA[Your range of points is from {low} to {high}.]]></phrase>
+    <phrase title="bdreputation_you_are_giving_x_reputation_to_y" version_id="1" version_string="0.9"><![CDATA[You are given {points} reputation points to {username}.]]></phrase>
+    <phrase title="bdreputation_you_can_specify_giving_points_from_x_to_y" version_id="1" version_string="0.9"><![CDATA[You can specify the giving amount of point here (minimum: {low}, maximum: {high}).]]></phrase>
+    <phrase title="option_bdReputation_factorMessageCount" version_id="1" version_string="0.9"><![CDATA[Message Count Factor]]></phrase>
+    <phrase title="option_bdReputation_factorMessageCount_explain" version_id="1" version_string="0.9"><![CDATA[For every X number of messages, users gain 1 point of reputation-altering power.]]></phrase>
+    <phrase title="option_bdReputation_factorRegisterDate" version_id="1" version_string="0.9"><![CDATA[Register Date Factor]]></phrase>
+    <phrase title="option_bdReputation_factorRegisterDate_explain" version_id="1" version_string="0.9"><![CDATA[For every X number of days, users gain 1 point of reputation-altering power.]]></phrase>
+    <phrase title="option_bdReputation_factorReputation" version_id="1" version_string="0.9"><![CDATA[Reputation Point Factor]]></phrase>
+    <phrase title="option_bdReputation_factorReputation_explain" version_id="1" version_string="0.9"><![CDATA[For every X points of reputation, users gain 1 point of reputation-altering power.]]></phrase>
+    <phrase title="option_bdReputation_factorTrophiesPoint" version_id="1" version_string="0.9"><![CDATA[Tropies Point Factor]]></phrase>
+    <phrase title="option_bdReputation_factorTrophiesPoint_explain" version_id="1" version_string="0.9"><![CDATA[For every X number of tropies point, users gain 1 point of reputation-altering power.]]></phrase>
+    <phrase title="option_bdReputation_latestGiven" version_id="4" version_string="1.2"><![CDATA[Latest Given in Posts]]></phrase>
+    <phrase title="option_bdReputation_latestGiven_explain" version_id="4" version_string="1.2"><![CDATA[Enable this option to show latest given reputation in posts. The system will try to cache its data to reduce server load and improve performance. The last 3 will be displayed.]]></phrase>
+    <phrase title="option_bdReputation_limitDaily" version_id="1" version_string="0.9"><![CDATA[Daily Limit]]></phrase>
+    <phrase title="option_bdReputation_limitDaily_explain" version_id="1" version_string="0.9"><![CDATA[How many reputation clicks can a user give over each 24 hour period? 0 means no limitation.]]></phrase>
+    <phrase title="option_bdReputation_limitUserSpread" version_id="1" version_string="0.9"><![CDATA[User Spread Limit]]></phrase>
+    <phrase title="option_bdReputation_limitUserSpread_explain" version_id="1" version_string="0.9"><![CDATA[How many different users must you give reputation to before you can hit the same person again? 0 means no limitation.]]></phrase>
+    <phrase title="option_bdReputation_recordsPerPage" version_id="1" version_string="0.9"><![CDATA[Records Per Page]]></phrase>
+    <phrase title="option_bdReputation_recordsPerPage_explain" version_id="1" version_string="0.9"><![CDATA[Enter the number of records to show in a page when viewing user's reputation]]></phrase>
+    <phrase title="option_group_bdReputation" version_id="1" version_string="0.9"><![CDATA[[bd] Reputation System]]></phrase>
+    <phrase title="option_group_bdReputation_description" version_id="1" version_string="0.9"><![CDATA[]]></phrase>
+    <phrase title="permission_forum_bdReputation_give" version_id="1" version_string="0.9"><![CDATA[Give reputation]]></phrase>
+    <phrase title="permission_forum_bdReputation_view" version_id="1" version_string="0.9"><![CDATA[View detail reputation of a post]]></phrase>
+    <phrase title="permission_general_bdReputation_exempt" version_id="1" version_string="0.9"><![CDATA[Exempt from reputation limit]]></phrase>
+    <phrase title="permission_general_bdReputation_giveNegative" version_id="1" version_string="0.9"><![CDATA[Deduct points when give reputation]]></phrase>
+    <phrase title="permission_general_bdReputation_points" version_id="1" version_string="0.9"><![CDATA[Maximum given points (0 to use default)]]></phrase>
+    <phrase title="permission_general_bdReputation_specify" version_id="1" version_string="0.9"><![CDATA[Specify exact amount when give reputation]]></phrase>
+    <phrase title="permission_general_bdReputation_viewGlobal" version_id="1" version_string="0.9"><![CDATA[View detail reputation of a user]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates>
+    <template title="alert_reputation_post" version_id="4" version_string="1.2"><![CDATA[<xen:if is="{$extra_data.points} > 0">
+	<xen:if is="{$extra_data.points} == 1">
+		{xen:phrase bdreputation_x_gave_y_point_for_your_post_in_the_thread_z,
+			'name={xen:helper username, $user, 'subject'}',
+			'title=<a href="{xen:link posts, $content}" class="PopupItemLink">{$content.title}</a>',
+			'points={xen:number {$extra_data.points}}'}
+	<xen:else />
+		{xen:phrase bdreputation_x_gave_y_points_for_your_post_in_the_thread_z,
+			'name={xen:helper username, $user, 'subject'}',
+			'title=<a href="{xen:link posts, $content}" class="PopupItemLink">{$content.title}</a>',
+			'points={xen:number {$extra_data.points}}'}
+	</xen:if>
+<xen:else />
+	<xen:if is="{$extra_data.points} == 1">
+		{xen:phrase bdreputation_x_took_away_y_point_for_your_post_in_the_thread_z,
+			'name={xen:helper username, $user, 'subject'}',
+			'title=<a href="{xen:link posts, $content}" class="PopupItemLink">{$content.title}</a>',
+			'points={xen:number {xen:calc '-1 * {$extra_data.points}'}}'}
+	<xen:else />
+		{xen:phrase bdreputation_x_took_away_y_points_for_your_post_in_the_thread_z,
+			'name={xen:helper username, $user, 'subject'}',
+			'title=<a href="{xen:link posts, $content}" class="PopupItemLink">{$content.title}</a>',
+			'points={xen:number {xen:calc '-1 * {$extra_data.points}'}}'}
+	</xen:if>
+</xen:if>
+<xen:if is="{$extra_data.comment}">
+{xen:phrase bdreputation_x_also_wrote, 'name={xen:helper username, $user, 'subject'}'}:
+{xen:helper wordtrim, {$extra_data.comment}, 50}
+</xen:if>]]></template>
+    <template title="bdreputation.css" version_id="3" version_string="1.1"><![CDATA[.ReputationRecord {
+	overflow: hidden; zoom: 1;
+}
+
+	.ReputationRecord .points {
+		float: left;
+		width: 65px;
+		text-align: center;
+		font-size: 18pt;
+		font-weight: bold;
+	}
+	
+	.ReputationRecord .given {
+		float: right;
+		font-size: 11px;
+		color: {xen:property mutedTextColor};
+	}
+
+	.ReputationRecord .info {
+		margin-left: 70px;
+	}
+	
+	.ReputationRecord .info .givenUser {
+		font-size: 11pt;
+		font-weight: bold;
+	}
+	
+	.ReputationRecord .info .comment {
+		color: {xen:property mutedTextColor};
+	}
+	
+	.ReputationRecord .info .post {
+		font-size: 11px;
+		color: {xen:property mutedTextColor};
+	}
+
+span.ReputationInjection {
+	display: inline;
+}]]></template>
+    <template title="bdreputation_account_alerts_achievements" version_id="3" version_string="1.1"><![CDATA[<li><input type="hidden" name="alertSet[reputation_post]" value="1" />
+	<label>
+		<input type="checkbox" value="1" name="alert[reputation_post]" {xen:checked "!{$alertOptOuts.reputation_post}"} />
+		{xen:phrase bdreputation_reputation}
+	</label>
+	<p class="hint">{xen:phrase bdreputation_someone_gives_reputation}</p>
+</li>]]></template>
+    <template title="bdreputation_call_for_action" version_id="1" version_string="0.9"><![CDATA[<a href="{xen:link posts/reputation-give, {xen:array 'post_id={$postId}'}}" class="OverlayTrigger item control reputation" data-cacheOverlay="false"><span></span>{xen:phrase bdreputation_reputation_give}</a>]]></template>
+    <template title="bdreputation_display_only" version_id="1" version_string="0.9"><![CDATA[<a href="{xen:link posts/reputation-view, {xen:array 'post_id={$postId}'}}" class="OverlayTrigger item control reputation" data-cacheOverlay="false"><span></span>{xen:phrase bdreputation_reputation_view}</a>]]></template>
+    <template title="bdreputation_injector" version_id="1" version_string="0.9"><![CDATA[<xen:comment>
+Because of the lack of hooks at good places, 
+this small snippet of javascript will be used to 
+inject all the needed html into posts...
+</xen:comment>
+
+<xen:require js="js/bdReputation/frontend.js" />
+<xen:require css="bdreputation.css" />
+
+<div class="ReputationInjector" style="display: none">
+	<div class="CallForAction">
+		<xen:include template="bdreputation_call_for_action">
+			<xen:set var="$postId">{$placeholder.postId}</xen:set>
+		</xen:include>
+	</div>
+	
+	<div class="DisplayOnly">
+		<xen:include template="bdreputation_display_only">
+			<xen:set var="$postId">{$placeholder.postId}</xen:set>
+		</xen:include>
+	</div>
+</div>
+
+<script type="text/javascript">
+var ReputationInjectorConfiguration = {
+	'data': {xen:helper json, {$ReputationInjectorData}},
+	'placeholder': {xen:helper json, {$placeholder}}
+};
+</script>]]></template>
+    <template title="bdreputation_member_reputation" version_id="1" version_string="0.9"><![CDATA[<xen:title>{xen:phrase bdreputation_given_reputation_records}: {$user.username}</xen:title>
+
+<xen:navigation>
+	<xen:breadcrumb href="{xen:link full:members, $user}">{$user.username}</xen:breadcrumb>
+</xen:navigation>
+
+<div class="section">
+	<xen:if is="{$records}">
+		<ol class="overlayScroll">
+			<xen:foreach loop="$records" value="$record">
+				<li class="primaryContent">
+					<xen:include template="bdreputation_single" />
+				</li>
+			</xen:foreach>
+		</ol>
+
+		<xen:pagenav link="members/reputation" linkdata="{$user}"
+			page="{$page}" perpage="{$recordsPerPage}" total="{$totalRecords}"
+		/>
+
+		<div class="sectionFooter opposedOptions overlayOnly">
+			<div class="right">
+				<input type="button" class="button primary OverlayCloser" value="{xen:phrase close}" />
+			</div>
+		</div>
+	<xen:else />
+		<div class="primaryContent">{xen:phrase bdreputation_no_reputation_records, 'name={$user.username}'}</div>
+		<div class="sectionFooter overlayOnly ">
+			<input type="button" class="button primary OverlayCloser" value="{xen:phrase close}" />
+		</div>
+	</xen:if>
+</div>]]></template>
+    <template title="bdreputation_member_view_tabs_content" version_id="2" version_string="1.0"><![CDATA[<li id="reputation" class="profileContent" data-loadUrl="{xen:link members/reputation, $user}">
+	{xen:phrase loading}...
+	<noscript><a href="{xen:link members/reputation, $user}">{xen:phrase view}</a></noscript>
+</li>]]></template>
+    <template title="bdreputation_member_view_tabs_heading" version_id="2" version_string="1.0"><![CDATA[<li><a href="{$requestPaths.requestUri}#reputation">{xen:phrase bdreputation_reputation}</a></li>]]></template>
+    <template title="bdreputation_message_latest_given" version_id="4" version_string="1.2"><![CDATA[<div class="signature">
+	<div>{xen:phrase bdreputation_latest_given}:</div>
+	<xen:foreach loop="{$message.xf_bdreputation_latest_given}" value="$given">
+		<div>
+			<a href="{xen:link 'members', {xen:array 'user_id={$given.given_user_id}', 'username={$given.given_username}'}}">{$given.given_username}</a>:
+			{xen:number $given.points} {xen:if '{$given.points} == 1', '{xen:phrase bdreputation_point}', '{xen:phrase bdreputation_points}'}
+			<xen:if hascontent="true">(<xen:contentcheck>{$given.comment}</xen:contentcheck>)</xen:if>
+			<span class="faint"><xen:datetime time="{$given.give_date}" /></span>
+		</div>
+	</xen:foreach>
+</div>]]></template>
+    <template title="bdreputation_message_user_info_extra" version_id="2" version_string="1.0"><![CDATA[<dl class="pairsInline">
+	<dt>{xen:phrase bdreputation_reputation}:</dt>
+	<dd>
+		<xen:if is="{$bdReputation_canViewUser}">
+			<a href="{xen:link 'members/reputation', $user}" class="OverlayTrigger">{xen:number $user.xf_bdreputation_given}</a>
+		<xen:else />
+			{xen:number $user.xf_bdreputation_given}
+		</xen:if>
+	</dd>
+</dl>]]></template>
+    <template title="bdreputation_post_reputation_give" version_id="1" version_string="0.9"><![CDATA[<xen:title>{xen:phrase bdreputation_reputation_give}: {$post.username}</xen:title>
+
+<xen:navigation>
+	<xen:breadcrumb source="$nodeBreadCrumbs" />
+	<xen:breadcrumb href="{xen:link full:posts, $post}">{$thread.title}</xen:breadcrumb>
+</xen:navigation>
+
+<form action="{xen:link 'posts/reputation-give', $post}" method="post" class="xenForm formOverlay AutoValidator">
+	<xen:if is="!{$bdReputation_canSpecify}">
+		<xen:if is="!{$bdReputation_canGiveNegative}">
+			<p>{xen:phrase bdreputation_you_are_giving_x_reputation_to_y, 'points={$bdReputation_points}', 'username={$post.username}'}</p>
+		<xen:else />
+			<dl class="ctrlUnit">
+				<dt><label>{xen:phrase bdreputation_reputation_give}...</label></dt>
+				<dd>
+					<ul>
+						<li>
+							<label for="ctrl_positive_1">
+								<input type="radio" name="positive" value="1" id="ctrl_positive_1" checked="checked" autofocus="true" />
+								{xen:phrase bdreputation_reputation_give_x_positive, 'points={$bdReputation_points}'}
+							</label>
+						</li>
+						<li>
+							<label for="ctrl_positive_0">
+								<input type="radio" name="positive" value="0" id="ctrl_positive_0" />
+								{xen:phrase bdreputation_reputation_give_x_negative, 'points={$bdReputation_points}'}
+							</label>
+						</li>
+					</ul>
+				</dd>
+			</dl>
+		</xen:if>
+	<xen:else />
+		<dl class="ctrlUnit">
+			<dt><label for="ctrl_specify">{xen:phrase bdreputation_points}:</label></dt>
+			<dd>
+				<input type="text" name="specify" id="ctrl_specify" class="textCtrl" value="{$bdReputation_points}" />
+				<p class="explain">
+					{xen:phrase bdreputation_you_can_specify_giving_points_from_x_to_y, 'low={xen:number {xen:if '!{$bdReputation_canGiveNegative}', '0', '{xen:calc '-1 * {$bdReputation_points}'}'}}', 'high={xen:number {$bdReputation_points}}'}
+				</p>
+			</dd>
+		</dl>
+	</xen:if>
+	
+	<dl class="ctrlUnit">
+		<dt><label for="ctrl_comment">{xen:phrase bdreputation_reputation_comment}:</label></dt>
+		<dd><textarea name="comment" id="ctrl_comment" rows="2" class="textCtrl Elastic"></textarea></dd>
+	</dl>
+
+	<dl class="ctrlUnit submitUnit">
+		<dt></dt>
+		<dd>
+			<input type="submit" value="{xen:phrase bdreputation_reputation_give}" accesskey="s" class="button primary" />
+		</dd>
+	</dl>
+
+	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+	<input type="hidden" name="_xfConfirm" value="1" />
+</form>]]></template>
+    <template title="bdreputation_post_reputation_view" version_id="3" version_string="1.1"><![CDATA[<xen:title>{xen:phrase bdreputation_post_reputation_records}: {$post.username}</xen:title>
+
+<xen:navigation>
+	<xen:breadcrumb source="$nodeBreadCrumbs" />
+	<xen:breadcrumb href="{xen:link full:posts, $post}">{$thread.title}</xen:breadcrumb>
+</xen:navigation>
+
+<div class="section">
+	<xen:if is="{$records}">
+		<ol class="overlayScroll">
+			<xen:foreach loop="$records" value="$record">
+				<li class="primaryContent">
+					<xen:include template="bdreputation_single" />
+				</li>
+			</xen:foreach>
+		</ol>
+		<div class="sectionFooter opposedOptions overlayOnly">
+			<div class="right">
+				<input type="button" class="button primary OverlayCloser" value="{xen:phrase close}" />
+			</div>
+		</div>
+	<xen:else />
+		<div class="primaryContent">{xen:phrase bdreputation_no_reputation_records}</div>
+	</xen:if>
+</div>]]></template>
+    <template title="bdreputation_single" version_id="1" version_string="0.9"><![CDATA[<xen:require css="bdreputation.css" />
+
+<div class="ReputationRecord" id="reputation-{$record.given_id}">
+	<div class="points">{xen:number {$record.points}}</div>
+	<div class="given">{xen:phrase bdreputation_given}: <xen:datetime time="$record.give_date" /></div>
+	<div class="info">
+		<h3 class="givenUser">
+			<xen:username user="{$record}" /><xen:if is="{$record.comment}">: <span class="comment">{$record.comment}</span></xen:if>
+		</h3>
+		<p class="post">{xen:helper snippet, {$record.post_message}, 200} (<a href="{xen:link 'posts', {$record}}">{xen:phrase post}</a>)</p>
+	</div>
+</div>]]></template>
+  </templates>
+</addon>
