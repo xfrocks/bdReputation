@@ -268,7 +268,9 @@ class bdReputation_Model_Given extends XenForo_Model {
 			if (!isset($conditions[$intField])) continue;
 			
 			if (is_array($conditions[$intField])) {
-				$sqlConditions[] = "given.$intField IN (" . $db->quote($conditions[$intField]) . ")";
+				if (!empty($conditions[$intField])) {
+					$sqlConditions[] = "given.$intField IN (" . $db->quote($conditions[$intField]) . ")";
+				}
 			} else {
 				$sqlConditions[] = "given.$intField = " . $db->quote($conditions[$intField]);
 			}
@@ -280,7 +282,7 @@ class bdReputation_Model_Given extends XenForo_Model {
 			$this->assertValidCutOffOperator($operator);
 			$sqlConditions[] = "given.give_date $operator " . $db->quote($cutOff);
 		}
-		
+
 		return $this->getConditionsForClause($sqlConditions);
 	}
 	
