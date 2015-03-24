@@ -268,7 +268,9 @@ class bdReputation_Model_Given extends XenForo_Model {
 			if (!isset($conditions[$intField])) continue;
 			
 			if (is_array($conditions[$intField])) {
-				if (!empty($conditions[$intField])) {
+				if (count($conditions[$intField]) == 0) {
+					$sqlConditions[] = "1 = 0";
+				} else {
 					$sqlConditions[] = "given.$intField IN (" . $db->quote($conditions[$intField]) . ")";
 				}
 			} else {
