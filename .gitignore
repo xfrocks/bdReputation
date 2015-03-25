@@ -1,0 +1,4 @@
+library/bdReputation/DevHelper/XFCP
+library/bdReputation/DevHelper/Generated
+*.devhelper
+FileSums.php
