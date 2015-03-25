@@ -38,30 +38,7 @@ class bdReputation_DataWriter_Given extends XenForo_DataWriter
         if (bdReputation_Option::get('latestGiven')) {
             // caches the latest given
             // since 1.3
-            $max = bdReputation_Option::get('latestGivenMax');
-            $existing = $this->_db->fetchOne("SELECT xf_bdreputation_latest_given FROM `xf_post` WHERE post_id = ?", $this->get('post_id'));
-            if (empty($existing)) {
-                $existing = array();
-            } else {
-                $existing = unserialize($existing);
-            }
-
-            // caches data about this
-            $existing[] = $this->getMergedData();
-
-            // makes sure the cache doesn't hold too much data
-            if (count($existing) > $max) {
-                array_shift($existing);
-            }
-
-            $this->_db->query("
-				UPDATE `xf_post`
-				SET xf_bdreputation_latest_given = ?
-				WHERE post_id = ?
-			", array(
-                serialize($existing),
-                $this->get('post_id')
-            ));
+            $this->_getGivenModel()->updatePostLatestGiven($this->get('post_id'));
         }
     }
 

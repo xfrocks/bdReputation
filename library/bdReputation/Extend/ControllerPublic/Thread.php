@@ -2,69 +2,44 @@
 
 class bdReputation_Extend_ControllerPublic_Thread extends XFCP_bdReputation_Extend_ControllerPublic_Thread
 {
-    public function actionIndex()
-    {
-        $response = parent::actionIndex();
 
-        if ($response instanceof XenForo_ControllerResponse_View) {
+    protected function _getDefaultViewParams(array $forum, array $thread, array $posts, $page = 1, array $viewParams = array())
+    {
+        $viewParams = parent::_getDefaultViewParams($forum, $thread, $posts, $page, $viewParams);
+
+        if (!empty($viewParams['posts'])) {
             /** @var bdReputation_Model_Given $givenModel */
             $givenModel = $this->getModelFromCache('bdReputation_Model_Given');
             $existed = $givenModel->getAllFromGivenUserForPostIds(
                 XenForo_Visitor::getUserId(),
-                array_keys($response->params['posts'])
+                array_keys($viewParams['posts'])
             );
 
-            $existedSimple = array();
+            $existedByPostId = array();
             foreach ($existed as $given) {
-                $existedSimple[$given['post_id']] = $given['points'];
+                $existedByPostId[$given['post_id']] = $given['points'];
             }
 
-            $postsSimple = array();
-            $postIdToQueryLatestGiven = array();
-
-            foreach ($response->params['posts'] as &$post) {
-                $post['bdReputation_canView'] = $givenModel->canView($post, $response->params['thread'], $response->params['forum']);
-                $post['bdReputation_canGive'] = $givenModel->canGive($post, $response->params['thread'], $response->params['forum']);
-                $post['bdReputation_given'] = !empty($existedSimple[$post['post_id']]) ? $existedSimple[$post['post_id']] : 0;
+            foreach ($viewParams['posts'] as &$postRef) {
+                $postRef['bdReputation_given'] = !empty($existedByPostId[$postRef['post_id']])
+                    ? $existedByPostId[$postRef['post_id']]
+                    : 0;
+                $postRef['bdReputation_given'] = intval($postRef['bdReputation_given']);
 
                 if (bdReputation_Option::get('latestGiven')) {
-                    if (empty($post['xf_bdreputation_latest_given'])) {
+                    if (empty($postRef['xf_bdreputation_latest_given'])) {
                         // this post data hasn't been built yet
-                        // we will have to query the database
-                        $postIdToQueryLatestGiven[] = $post['post_id'];
-                        $post['xf_bdreputation_latest_given'] = array();
+                        // we will have to query the database (the result will be cached though)
+                        $postRef['bdReputation_latestGiven'] = $givenModel->updatePostLatestGiven($postRef['post_id']);
                     } else {
-                        $post['xf_bdreputation_latest_given'] = unserialize($post['xf_bdreputation_latest_given']);
-                    }
-                }
-
-                $postsSimple[] = array(
-                    'post_id' => $post['post_id'],
-                    'user_id' => $post['user_id'],
-                    'bdReputation_canView' => $post['bdReputation_canView'],
-                    'bdReputation_canGive' => $post['bdReputation_canGive'],
-                    'bdReputation_given' => $post['bdReputation_given'],
-                );
-            }
-
-            if (!empty($postIdToQueryLatestGiven)) {
-                $latestGivenForPosts = $givenModel->getAllForPostId($postIdToQueryLatestGiven, array('order' => 'give_date', 'direction' => 'asc'));
-                $latestGivenMax = bdReputation_Option::get('latestGivenMax');
-                foreach ($latestGivenForPosts as $latestGiven) {
-                    $response->params['posts'][$latestGiven['post_id']]['xf_bdreputation_latest_given'][] = $latestGiven;
-
-                    if (count($response->params['posts'][$latestGiven['post_id']]['xf_bdreputation_latest_given']) > $latestGivenMax) {
-                        array_shift($response->params['posts'][$latestGiven['post_id']]['xf_bdreputation_latest_given']);
+                        $postRef['bdReputation_latestGiven'] = XenForo_Permission::unserializePermissions($postRef['xf_bdreputation_latest_given']);
                     }
                 }
             }
-
-            $GLOBALS['ReputationInjectorData'] = array(
-                'posts' => $postsSimple,
-                'visitorUserId' => XenForo_Visitor::getUserId(),
-            );
         }
 
-        return $response;
+        return $viewParams;
     }
+
+
 } 

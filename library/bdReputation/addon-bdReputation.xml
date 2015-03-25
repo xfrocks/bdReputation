@@ -10,8 +10,7 @@
     <listener event_id="load_class_controller" execute_order="10" callback_class="bdReputation_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_datawriter" execute_order="10" callback_class="bdReputation_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_importer" execute_order="10" callback_class="bdReputation_Listener" callback_method="load_class_importer" active="1" hint="" description=""/>
-    <listener event_id="template_create" execute_order="10" callback_class="bdReputation_Listener" callback_method="template_create" active="1" hint="" description=""/>
-    <listener event_id="template_hook" execute_order="10" callback_class="bdReputation_Listener" callback_method="template_hook" active="1" hint="" description=""/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="bdReputation_Listener" callback_method="load_class" active="1" hint="" description=""/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
@@ -210,37 +209,6 @@ span.ReputationInjection {
 	</label>
 	<p class="hint">{xen:phrase bdreputation_someone_gives_reputation}</p>
 </li>]]></template>
-    <template title="bdreputation_call_for_action" version_id="1" version_string="0.9"><![CDATA[<a href="{xen:link posts/reputation-give, {xen:array 'post_id={$postId}'}}" class="OverlayTrigger item control reputation" data-cacheOverlay="false"><span></span>{xen:phrase bdreputation_reputation_give}</a>]]></template>
-    <template title="bdreputation_display_only" version_id="1" version_string="0.9"><![CDATA[<a href="{xen:link posts/reputation-view, {xen:array 'post_id={$postId}'}}" class="OverlayTrigger item control reputation" data-cacheOverlay="false"><span></span>{xen:phrase bdreputation_reputation_view}</a>]]></template>
-    <template title="bdreputation_injector" version_id="1" version_string="0.9"><![CDATA[<xen:comment>
-Because of the lack of hooks at good places, 
-this small snippet of javascript will be used to 
-inject all the needed html into posts...
-</xen:comment>
-
-<xen:require js="js/bdReputation/frontend.js" />
-<xen:require css="bdreputation.css" />
-
-<div class="ReputationInjector" style="display: none">
-	<div class="CallForAction">
-		<xen:include template="bdreputation_call_for_action">
-			<xen:set var="$postId">{$placeholder.postId}</xen:set>
-		</xen:include>
-	</div>
-	
-	<div class="DisplayOnly">
-		<xen:include template="bdreputation_display_only">
-			<xen:set var="$postId">{$placeholder.postId}</xen:set>
-		</xen:include>
-	</div>
-</div>
-
-<script type="text/javascript">
-var ReputationInjectorConfiguration = {
-	'data': {xen:helper json, {$ReputationInjectorData}},
-	'placeholder': {xen:helper json, {$placeholder}}
-};
-</script>]]></template>
     <template title="bdreputation_member_reputation" version_id="1" version_string="0.9"><![CDATA[<xen:title>{xen:phrase bdreputation_given_reputation_records}: {$user.username}</xen:title>
 
 <xen:navigation>
@@ -273,32 +241,47 @@ var ReputationInjectorConfiguration = {
 		</div>
 	</xen:if>
 </div>]]></template>
-    <template title="bdreputation_member_view_tabs_content" version_id="2" version_string="1.0"><![CDATA[<li id="reputation" class="profileContent" data-loadUrl="{xen:link members/reputation, $user}">
-	{xen:phrase loading}...
-	<noscript><a href="{xen:link members/reputation, $user}">{xen:phrase view}</a></noscript>
-</li>]]></template>
-    <template title="bdreputation_member_view_tabs_heading" version_id="2" version_string="1.0"><![CDATA[<li><a href="{$requestPaths.requestUri}#reputation">{xen:phrase bdreputation_reputation}</a></li>]]></template>
-    <template title="bdreputation_message_latest_given" version_id="4" version_string="1.2"><![CDATA[<div class="signature">
-	<div>{xen:phrase bdreputation_latest_given}:</div>
-	<xen:foreach loop="{$message.xf_bdreputation_latest_given}" value="$given">
-		<div>
-			<a href="{xen:link 'members', {xen:array 'user_id={$given.given_user_id}', 'username={$given.given_username}'}}">{$given.given_username}</a>:
-			{xen:number $given.points} {xen:if '{$given.points} == 1', '{xen:phrase bdreputation_point}', '{xen:phrase bdreputation_points}'}
-			<xen:if hascontent="true">(<xen:contentcheck>{$given.comment}</xen:contentcheck>)</xen:if>
-			<span class="faint"><xen:datetime time="{$given.give_date}" /></span>
-		</div>
-	</xen:foreach>
-</div>]]></template>
-    <template title="bdreputation_message_user_info_extra" version_id="2" version_string="1.0"><![CDATA[<dl class="pairsInline">
+    <template title="bdreputation_member_view_tabs_content" version_id="6" version_string="1.3.1"><![CDATA[<xen:if is="{$user.bdReputation_canView}">
+	<li id="reputation" class="profileContent" data-loadUrl="{xen:link members/reputation, $user}">
+		{xen:phrase loading}...
+		<noscript><a href="{xen:link members/reputation, $user}">{xen:phrase view}</a></noscript>
+	</li>
+</xen:if>]]></template>
+    <template title="bdreputation_member_view_tabs_heading" version_id="6" version_string="1.3.1"><![CDATA[<xen:if is="{$user.bdReputation_canView}">
+	<li><a href="{$requestPaths.requestUri}#reputation">{xen:phrase bdreputation_reputation}</a></li>
+</xen:if>]]></template>
+    <template title="bdreputation_message_latest_given" version_id="6" version_string="1.3.1"><![CDATA[<xen:if is="{$message.bdReputation_latestGiven}">
+	<div class="signature">
+		<div>{xen:phrase bdreputation_latest_given}:</div>
+		<xen:foreach loop="{$message.bdReputation_latestGiven}" value="$given">
+			<div>
+				<a href="{xen:link 'members', {xen:array 'user_id={$given.given_user_id}', 'username={$given.given_username}'}}">{$given.given_username}</a>:
+				{xen:number $given.points} {xen:if '{$given.points} == 1', '{xen:phrase bdreputation_point}', '{xen:phrase bdreputation_points}'}
+				<xen:if hascontent="true">(<xen:contentcheck>{$given.comment}</xen:contentcheck>)</xen:if>
+				<span class="faint"><xen:datetime time="{$given.give_date}" /></span>
+			</div>
+		</xen:foreach>
+	</div>
+</xen:if>]]></template>
+    <template title="bdreputation_message_user_info_extra" version_id="6" version_string="1.3.1"><![CDATA[<dl class="pairsInline">
 	<dt>{xen:phrase bdreputation_reputation}:</dt>
 	<dd>
-		<xen:if is="{$bdReputation_canViewUser}">
+		<xen:if is="{$user.bdReputation_canViewUser}">
 			<a href="{xen:link 'members/reputation', $user}" class="OverlayTrigger">{xen:number $user.xf_bdreputation_given}</a>
 		<xen:else />
 			{xen:number $user.xf_bdreputation_given}
 		</xen:if>
 	</dd>
 </dl>]]></template>
+    <template title="bdreputation_post_public_controls" version_id="6" version_string="1.3.1"><![CDATA[<xen:if is="{$post.bdReputation_canGive} && {$post.bdReputation_given} == 0">
+	<a href="{xen:link posts/reputation-give, {xen:array 'post_id={$post.post_id}'}}"
+	   class="OverlayTrigger item control reputation"
+	   data-cacheOverlay="false"><span></span>{xen:phrase bdreputation_reputation_give}</a>
+<xen:else is="{$post.bdReputation_canView}" />
+	<a href="{xen:link posts/reputation-view, {xen:array 'post_id={$post.post_id}'}}"
+	   class="OverlayTrigger item control reputation"
+	   data-cacheOverlay="false"><span></span>{xen:phrase bdreputation_reputation_view}</a>
+</xen:if>]]></template>
     <template title="bdreputation_post_reputation_give" version_id="1" version_string="0.9"><![CDATA[<xen:title>{xen:phrase bdreputation_reputation_give}: {$post.username}</xen:title>
 
 <xen:navigation>
@@ -396,7 +379,51 @@ var ReputationInjectorConfiguration = {
 	</div>
 </div>]]></template>
   </templates>
-  <public_template_modifications/>
+  <public_template_modifications>
+    <modification template="account_alert_preferences" modification_key="bdreputation_account_alerts_achievements" description="Insert alert achievement option." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<xen:hook name="account_alerts_achievements".+?)(</xen:hook>)#s]]></find>
+      <replace><![CDATA[$1
+
+<xen:include template="bdreputation_account_alerts_achievements" />
+
+$2]]></replace>
+    </modification>
+    <modification template="member_view" modification_key="bdreputation_member_view_tabs_content" description="Insert reputation tab contents." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:hook name="member_view_tabs_content"]]></find>
+      <replace><![CDATA[<xen:include template="bdreputation_member_view_tabs_content" />
+
+$0]]></replace>
+    </modification>
+    <modification template="member_view" modification_key="bdreputation_member_view_tabs_heading" description="Insert reputation tab header." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:hook name="member_view_tabs_heading"]]></find>
+      <replace><![CDATA[<xen:include template="bdreputation_member_view_tabs_heading" />
+
+$0]]></replace>
+    </modification>
+    <modification template="message" modification_key="bdreputation_message_latest_given" description="Insert latest given into message." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<xen:hook name="message_content".+?)(</xen:hook>)#s]]></find>
+      <replace><![CDATA[$1
+
+<xen:include template="bdreputation_message_latest_given" />
+
+$2]]></replace>
+    </modification>
+    <modification template="message_user_info" modification_key="bdreputation_message_user_info_extra" description="Insert user reputation score in message." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<xen:hook name="message_user_info_extra".+?)(</xen:hook>)#s]]></find>
+      <replace><![CDATA[$1
+
+<xen:include template="bdreputation_message_user_info_extra" />
+$2]]></replace>
+    </modification>
+    <modification template="post" modification_key="bdreputation_post_public_controls" description="Insert reputation link into post public controls section." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<xen:hook name="post_public_controls".+?)(</xen:hook>)#s]]></find>
+      <replace><![CDATA[$1
+
+<xen:include template="bdreputation_post_public_controls" />
+
+$2]]></replace>
+    </modification>
+  </public_template_modifications>
   <bb_code_media_sites/>
   <bb_codes/>
 </addon>

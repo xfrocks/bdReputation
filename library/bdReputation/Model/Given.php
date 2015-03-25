@@ -6,6 +6,26 @@ class bdReputation_Model_Given extends XenForo_Model
     const FETCH_GIVEN_USER = 0x02;
     const FETCH_POST = 0x04;
 
+    public function updatePostLatestGiven($postId)
+    {
+        $latestGiven = $this->getAllForPostId($postId, array(
+            'order' => 'give_date',
+            'direction' => 'asc',
+            'limit' => bdReputation_Option::get('latestGivenMax'),
+        ));
+
+        $this->_getDb()->query('
+            UPDATE `xf_post`
+            SET xf_bdreputation_latest_given = ?
+            WHERE post_id = ?
+        ', array(
+            serialize($latestGiven),
+            $postId,
+        ));
+
+        return $latestGiven;
+    }
+
     public function give(array $post, $points, $comment, $givenUser = null)
     {
         $this->standardizeViewingUserReference($givenUser);
@@ -20,92 +40,6 @@ class bdReputation_Model_Given extends XenForo_Model
         $dw->set('comment', $comment);
 
         $dw->save();
-    }
-
-    public function canView(array $post, array $thread, array $forum, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
-    {
-        $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
-
-        if ($post['user_id'] == $viewingUser['user_id']) {
-            // special case: always possible to view self
-            return true;
-        }
-
-        if ($post['user_id'] == 0) {
-            // special case: always impossible to view guest
-            return false;
-        }
-
-        /** @var XenForo_Model_Post $postModel */
-        $postModel = $this->getModelFromCache('XenForo_Model_Post');
-        if (!$postModel->canViewPost($post, $thread, $forum, $errorPhraseKey, $nodePermissions, $viewingUser)) {
-            return false;
-        }
-
-        if (!XenForo_Permission::hasContentPermission($nodePermissions, 'bdReputation_view')) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function canGive(array $post, array $thread, array $forum, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
-    {
-        $this->standardizeViewingUserReferenceForNode($thread['node_id'], $viewingUser, $nodePermissions);
-
-        if ($post['user_id'] == $viewingUser['user_id']) {
-            // special case: always impossible to give self
-            return false;
-        }
-
-        if ($post['user_id'] == 0) {
-            // special case: always impossible to give guest
-            return false;
-        }
-
-        /** @var XenForo_Model_Post $postModel */
-        $postModel = $this->getModelFromCache('XenForo_Model_Post');
-        if (!$postModel->canViewPost($post, $thread, $forum, $errorPhraseKey, $nodePermissions, $viewingUser)) {
-            return false;
-        }
-
-        if (!XenForo_Permission::hasContentPermission($nodePermissions, 'bdReputation_give')) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function canViewGlobal(array $viewingUser = null)
-    {
-        $this->standardizeViewingUserReference($viewingUser);
-
-        if (XenForo_Permission::hasPermission($viewingUser['permissions'], 'general', 'bdReputation_viewGlobal')) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function canViewUser(array $user, array $viewingUser = null)
-    {
-        if ($user['user_id'] == 0) {
-            // special case: always IMpossible to view guest
-            return false;
-        }
-
-        $canView = $this->canViewGlobal($viewingUser);
-
-        if (!$canView) {
-            // special case: always possible to view self
-            $this->standardizeViewingUserReference($viewingUser);
-
-            if ($user['user_id'] == $viewingUser['user_id']) {
-                $canView = true;
-            }
-        }
-
-        return $canView;
     }
 
     public function canSpecify(array $viewingUser = null)
@@ -205,6 +139,10 @@ class bdReputation_Model_Given extends XenForo_Model
 
     public function getAllFromGivenUserForPostIds($givenUserId, array $postIds, array $fetchOptions = array())
     {
+        if ($givenUserId == 0) {
+            return array();
+        }
+
         return $this->getAllGiven(array('given_user_id' => $givenUserId, 'post_id' => $postIds), $fetchOptions);
     }
 

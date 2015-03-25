@@ -93,6 +93,10 @@ class bdReputation_Installer
 
     public static function installCustomized($existingAddOn, $addOnData)
     {
+        if (XenForo_Application::$versionId < 1020000) {
+            throw new XenForo_Exception('[bd] Reputation System requires XenForo 1.2.0+', true);
+        }
+
         $db = XenForo_Application::getDb();
 
         $existingVersionId = 0;

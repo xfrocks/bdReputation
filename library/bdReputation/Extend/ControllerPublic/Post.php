@@ -10,12 +10,14 @@ class bdReputation_Extend_ControllerPublic_Post extends XFCP_bdReputation_Extend
         $ftpHelper = $this->getHelper('ForumThreadPost');
         list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable($postId);
 
-        /** @var bdReputation_Model_Given $givenModel */
-        $givenModel = $this->getModelFromCache('bdReputation_Model_Given');
-        if (!$givenModel->canGive($post, $thread, $forum)) {
-            return $this->responseNoPermission();
+        /** @var bdReputation_Extend_Model_Post $postModel */
+        $postModel = $this->getModelFromCache('XenForo_Model_Post');
+        if (!$postModel->bdReputation_canGivePost($post, $thread, $forum, $errorPhraseKey)) {
+            throw $this->getErrorOrNoPermissionResponseException($errorPhraseKey);
         }
 
+        /** @var bdReputation_Model_Given $givenModel */
+        $givenModel = $this->getModelFromCache('bdReputation_Model_Given');
         $given = $givenModel->getOneFromGivenUserForPostId(XenForo_Visitor::getUserId(), $post['post_id']);
         if (!empty($given)) {
             return $this->responseReroute(__CLASS__, 'reputation-view');
@@ -79,7 +81,9 @@ class bdReputation_Extend_ControllerPublic_Post extends XFCP_bdReputation_Extend
                 XenForo_ControllerResponse_Redirect::SUCCESS,
                 XenForo_Link::buildPublicLink('posts', $post),
                 new XenForo_Phrase('bdreputation_thanks'),
-                array('linkPhrase' => ($givenModel->canView($post, $thread, $forum) ? new XenForo_Phrase('bdreputation_reputation_view') : ' '))
+                array(
+                    'linkPhrase' => new XenForo_Phrase('bdreputation_reputation_view')
+                )
             );
         }
     }
@@ -92,10 +96,10 @@ class bdReputation_Extend_ControllerPublic_Post extends XFCP_bdReputation_Extend
         $ftpHelper = $this->getHelper('ForumThreadPost');
         list($post, $thread, $forum) = $ftpHelper->assertPostValidAndViewable($postId);
 
-        /** @var bdReputation_Model_Given $givenModel */
-        $givenModel = $this->getModelFromCache('bdReputation_Model_Given');
-        if (!$givenModel->canView($post, $thread, $forum)) {
-            return $this->responseNoPermission();
+        /** @var bdReputation_Extend_Model_Post $postModel */
+        $postModel = $this->getModelFromCache('XenForo_Model_Post');
+        if (!$postModel->bdReputation_canViewPost($post, $thread, $forum, $errorPhraseKey)) {
+            throw $this->getErrorOrNoPermissionResponseException($errorPhraseKey);
         }
 
         $fetchOptions = array(
@@ -104,6 +108,8 @@ class bdReputation_Extend_ControllerPublic_Post extends XFCP_bdReputation_Extend
             'direction' => 'desc',
         );
 
+        /** @var bdReputation_Model_Given $givenModel */
+        $givenModel = $this->getModelFromCache('bdReputation_Model_Given');
         $records = $givenModel->getAllForPostId($post['post_id'], $fetchOptions);
 
         $viewParams = array(

@@ -10,9 +10,9 @@ class bdReputation_Extend_ControllerPublic_Member extends XFCP_bdReputation_Exte
         $userProfileHelper = $this->getHelper('UserProfile');
         $user = $userProfileHelper->getUserOrError($userId);
 
-        /** @var bdReputation_Model_Given $givenModel */
-        $givenModel = $this->getModelFromCache('bdReputation_Model_Given');
-        if (!$givenModel->canViewUser($user)) {
+        /** @var bdReputation_Extend_Model_User $userModel */
+        $userModel = $this->_getUserModel();
+        if (!$userModel->bdReputation_canViewUser($user)) {
             return $this->responseNoPermission();
         }
 
@@ -27,6 +27,8 @@ class bdReputation_Extend_ControllerPublic_Member extends XFCP_bdReputation_Exte
         $fetchOptions['page'] = $page;
         $fetchOptions['perPage'] = $recordsPerPage;
 
+        /** @var bdReputation_Model_Given $givenModel */
+        $givenModel = $this->getModelFromCache('bdReputation_Model_Given');
         $records = $givenModel->getAllForReceivedUser($user['user_id'], $fetchOptions);
         $totalRecords = $givenModel->countAllForReceivedUser($user['user_id'], $fetchOptions);
 
