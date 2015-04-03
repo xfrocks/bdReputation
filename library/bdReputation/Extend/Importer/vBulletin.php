@@ -39,7 +39,7 @@ class bdReputation_Extend_Importer_vBulletin extends XFCP_bdReputation_Extend_Im
         $prefix = $this->_prefix;
         $model = $this->_importModel;
 
-        if ($options['max'] === false) {
+        if (empty($options['max']) || empty($options['rows'])) {
             $data = $sDb->fetchRow('
 				SELECT MAX(reputationid) AS max, COUNT(reputationid) AS rows
 				FROM ' . $prefix . 'reputation
@@ -128,10 +128,10 @@ class bdReputation_Extend_Importer_vBulletin extends XFCP_bdReputation_Extend_Im
         $prefix = $this->_prefix;
         $model = $this->_importModel;
 
-        if ($options['max'] === false) {
+        if (empty($options['max']) || empty($options['rows'])) {
             $data = $sDb->fetchRow('
 				SELECT MAX(userid) AS max, COUNT(userid) AS rows
-				FROM ' . $prefix . 'USER
+				FROM ' . $prefix . 'user
 			');
 
             $options = array_merge($options, $data);
@@ -139,7 +139,7 @@ class bdReputation_Extend_Importer_vBulletin extends XFCP_bdReputation_Extend_Im
 
         $users = $sDb->fetchAll($sDb->limit('
 				SELECT userid, reputation
-				FROM ' . $prefix . 'USER
+				FROM ' . $prefix . 'user
 				WHERE userid >= ' . $sDb->quote($start) . '
 				ORDER BY userid
 			', $options['limit']
