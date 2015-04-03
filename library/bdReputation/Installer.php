@@ -15,7 +15,7 @@ class bdReputation_Installer
                 ,`given_username` VARCHAR(50) NOT NULL
                 ,`give_date` INT(10) UNSIGNED NOT NULL
                 ,`points` INT(11) NOT NULL
-                ,`comments` VARCHAR(255)
+                ,`comment` VARCHAR(255)
                 , PRIMARY KEY (`given_id`)
                 ,UNIQUE INDEX `post_id_given_user_id` (`post_id`,`given_user_id`)
                 , INDEX `received_user_id` (`received_user_id`)

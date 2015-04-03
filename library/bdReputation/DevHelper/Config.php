@@ -18,7 +18,7 @@ class bdReputation_DevHelper_Config extends DevHelper_Config_Base
                 'given_username' => array('name' => 'given_username', 'type' => 'string', 'length' => 50, 'required' => true),
                 'give_date' => array('name' => 'give_date', 'type' => 'uint', 'required' => true),
                 'points' => array('name' => 'points', 'type' => 'int', 'required' => true),
-                'comments' => array('name' => 'comments', 'type' => 'string', 'length' => 255),
+                'comment' => array('name' => 'comment', 'type' => 'string', 'length' => 255),
             ),
             'phrases' => array(),
             'id_field' => 'given_id',
